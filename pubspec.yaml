@@ -1,0 +1,23 @@
+name: h_clicker
+description: H Clicker made by dnorhoj
+
+version: 1.2.0+3
+
+environment:
+  sdk: ">=2.2.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^0.1.2
+
+  # I use shared_preferences to save settings etc.
+  shared_preferences: ^0.5.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
