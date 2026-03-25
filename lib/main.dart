@@ -1,35 +1,52 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'homepage.dart';
-import 'settings.dart';
-import 'shop.dart';
+import 'package:h_clicker/utils.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'pages/homepage.dart';
 
-void main() => runApp(MyApp());
+HState build_state(SharedPreferencesWithCache sharedPrefs) {
+  var counter = sharedPrefs.getInt(SharedPrefs.COUNTER) ?? 0;
+  var themeIndex = sharedPrefs.getInt(SharedPrefs.SELECTED_THEME_INDEX) ?? 0;
+  var ownedThemes =
+      sharedPrefs.getStringList(SharedPrefs.OWNED_THEMES) ?? ["0"];
 
-class MyApp extends StatelessWidget {
+  return HState.fromValuesWithPrefs(
+    counter: counter,
+    themeIndex: themeIndex,
+    ownedThemes: ownedThemes,
+    sharedPrefs: sharedPrefs,
+  );
+}
+
+void main() async {
+  var sharedPrefs = await SharedPreferencesWithCache.create(
+    cacheOptions: SharedPreferencesWithCacheOptions(),
+  );
+
+  runApp(HClicker(build_state(sharedPrefs)));
+}
+
+class HClicker extends StatelessWidget {
+  final HState state;
+
+  const HClicker(this.state, {super.key});
+
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+
     return MaterialApp(
       title: 'H Clicker',
-      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.dark,
-        backgroundColor: Colors.black,
-        scaffoldBackgroundColor: Colors.black,
-        primaryColor: Colors.black,
         pageTransitionsTheme: PageTransitionsTheme(
-          builders: {
-            TargetPlatform.android: CupertinoPageTransitionsBuilder()
-          }
-        )
+          builders: {TargetPlatform.android: CupertinoPageTransitionsBuilder()},
+        ),
       ),
-      routes: {
-        "/": (context) => HPage(),
-        "/settings": (context) => SettingsPage(),
-        "/shop": (context) => ShopPage(),
-      },
-      initialRoute: "/",
+      home: HPage(state),
     );
   }
 }
